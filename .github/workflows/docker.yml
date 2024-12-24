@@ -1,0 +1,57 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Build the Docker image for testing
+      - name: Build Docker Test Image
+        run: docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
+
+      # Run tests
+      - name: Run Tests
+        run: docker run -e CI=true complex/react-test npm test
+
+      # Build and push images on success
+      - name: Build and Push Docker Images
+        if: success()
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        steps:
+          # Build Docker images
+          - name: Build Client Image
+            run: docker build -t complex/multi-client ./client
+          - name: Build Nginx Image
+            run: docker build -t complex/multi-nginx ./nginx
+          - name: Build Server Image
+            run: docker build -t complex/multi-server ./server
+          - name: Build Worker Image
+            run: docker build -t complex/multi-worker ./worker
+
+          # Log in to Docker Hub
+          - name: Log in to Docker Hub
+            run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+
+          # Push Docker images to Docker Hub
+          - name: Push Client Image
+            run: docker push complex/multi-client
+          - name: Push Nginx Image
+            run: docker push complex/multi-nginx
+          - name: Push Server Image
+            run: docker push complex/multi-server
+          - name: Push Worker Image
+            run: docker push complex/multi-worker
