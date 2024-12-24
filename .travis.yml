@@ -1,4 +1,7 @@
-# language: generic 
+# language: generic
+branches:
+  only:
+    - master
 sudo: required
 services:
   - docker
