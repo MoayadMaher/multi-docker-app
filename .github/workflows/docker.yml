@@ -50,5 +50,4 @@ jobs:
 
       # Step 5: Debug secrets (optional, remove after verification)
       - name: Debug Secrets
-        if: always()
         run: echo "Docker username is set to: $DOCKER_USERNAME"
