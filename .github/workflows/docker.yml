@@ -28,12 +28,13 @@ jobs:
 
       # Step 4: Build and Push Docker Images if tests succeed
       - name: Build and Push Docker Images
+        if: success() # Place if before env
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        if: success() # Ensure this is properly aligned
         run: |
           # Log in to Docker Hub
+          echo "Docker username is set to: $DOCKER_USERNAME"
           echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
           
           # Build Docker images
@@ -47,8 +48,3 @@ jobs:
           docker push complex/multi-nginx
           docker push complex/multi-server
           docker push complex/multi-worker
-
-      # Step 5: Debug secrets (optional, remove after verification)
-      - name: Debug Secrets
-        if: always() # Always runs, even if other steps fail
-        run: echo "Docker username is set to: $DOCKER_USERNAME"
