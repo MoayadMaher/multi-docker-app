@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # Allows manual trigger of the workflow
+  workflow_dispatch: # Allows manual trigger of the workflow
 
 jobs:
   build:
@@ -28,10 +28,10 @@ jobs:
 
       # Step 4: Build and Push Docker Images if tests succeed
       - name: Build and Push Docker Images
-        if: success()
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        if: success() # Ensure this is properly aligned
         run: |
           # Log in to Docker Hub
           echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
@@ -50,4 +50,5 @@ jobs:
 
       # Step 5: Debug secrets (optional, remove after verification)
       - name: Debug Secrets
+        if: always() # Always runs, even if other steps fail
         run: echo "Docker username is set to: $DOCKER_USERNAME"
