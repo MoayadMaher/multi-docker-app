@@ -3,46 +3,52 @@ name: Docker CI/CD
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
+  workflow_dispatch:  # Allows manual trigger of the workflow
 
 jobs:
   build:
     runs-on: ubuntu-22.04
 
     steps:
-      # Checkout the repository
+      # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Build the Docker image for testing
+      # Step 2: Build the Docker image for testing
       - name: Build Docker Test Image
         run: docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
 
-      # Run tests
+      # Step 3: Run tests
       - name: Run Tests
         run: docker run -e CI=true complex/react-test npm test
 
-      # Build and push images on success
+      # Step 4: Build and Push Docker Images if tests succeed
       - name: Build and Push Docker Images
         if: success()
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
+          # Log in to Docker Hub
+          echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+          
           # Build Docker images
           docker build -t complex/multi-client ./client
           docker build -t complex/multi-nginx ./nginx
           docker build -t complex/multi-server ./server
           docker build -t complex/multi-worker ./worker
-
-          # Log in to Docker Hub
-          echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-
+          
           # Push Docker images to Docker Hub
           docker push complex/multi-client
           docker push complex/multi-nginx
           docker push complex/multi-server
           docker push complex/multi-worker
+
+      # Step 5: Debug secrets (optional, remove after verification)
+      - name: Debug Secrets
+        if: always()
+        run: echo "Docker username is set to: $DOCKER_USERNAME"
