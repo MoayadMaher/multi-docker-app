@@ -49,3 +49,7 @@ jobs:
           docker push complex/multi-nginx
           docker push complex/multi-server
           docker push complex/multi-worker
+
+        # debug the docker login
+      - name: Debug Environment Variables
+        run: env | grep DOCKER
