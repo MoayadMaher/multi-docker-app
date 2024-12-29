@@ -33,7 +33,8 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          # Log in to Docker Hub         
+          # Log in to Docker Hub 
+          env | grep DOCKER
           echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
           echo "Docker username is set to: $DOCKER_USERNAME"
           docker info
