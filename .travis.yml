@@ -5,21 +5,21 @@ services:
   - docker
 
 before_install:
+  # Debugging before install
   - echo "Before install step"
-  
+  - echo "Setting up Docker credentials"
+  - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json  # Ensure Docker credentials are set up correctly
+  - echo "Docker config created"
+
 before_deploy:
-  # Debugging output
+  # Debugging before deploy
   - echo "Starting before_deploy..."
-  - mkdir -p ~/.docker
-  - echo "DOCKER_AUTH_CONFIG: $DOCKER_AUTH_CONFIG"
-  - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json
-  - echo "Docker config created."
-  - docker info  # This will display info about Docker
-  
-  # Docker build and deploy setup
-  - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
+  - docker info  # Check Docker status and authentication info
+  - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client  # Build the Docker image
+  - echo "Docker build complete"
 
 script:
+  # Debugging script
   - echo "Running script..."
   - docker run -e CI=true complex/react-test npm test
 
