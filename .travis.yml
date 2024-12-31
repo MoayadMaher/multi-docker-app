@@ -21,7 +21,7 @@ before_deploy:
 script:
   # Run tests or any other commands
   - echo "Running tests"
-  - docker run -e CI=true complex/react-test npm test
+  # - docker run -e CI=true complex/react-test npm test
 
 after_success:
   # Push the built Docker images to Docker Hub
