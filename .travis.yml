@@ -11,12 +11,12 @@ before_install:
   - echo "Setting up Docker credentials"
   - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json  # Decode Docker credentials
   - echo "Docker config created"
-  - cat ~/.docker/config.jso
+  - cat ~/.docker/config.json
 
 before_deploy:
   # Ensure Docker is logged in
   - docker info  # Check if Docker is properly configured
-  - docker login -u "$DOCKER_ID" --password-stdin <<< "$DOCKER_PASSWORD"  # Explicitly login if needed
+  # - docker login -u "$DOCKER_ID" --password-stdin <<< "$DOCKER_PASSWORD"  # Explicitly login if needed
   # - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client  # Build Docker image
 
 script:
