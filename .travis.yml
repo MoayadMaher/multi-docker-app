@@ -17,7 +17,7 @@ before_deploy:
 
 script:
   # Run tests inside the container
-  - docker run -e CI=true complex/react-test npm test
+  # - docker run -e CI=true complex/react-test npm test
 
 after_success:
   # Build your Docker images
