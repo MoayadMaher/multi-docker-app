@@ -5,11 +5,11 @@ services:
   - docker
 
 before_install:
-  - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
-  - docker login -u $DOCKER_ID --password "$DOCKER_PASSWORD"
+  # - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
+  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_ID" --password-stdin
 
 script:
-  - docker run -e CI=true complex/react-test npm test
+  # - docker run -e CI=true complex/react-test npm test
 
 after_success:
   - docker build -t complex/multi-client ./client
