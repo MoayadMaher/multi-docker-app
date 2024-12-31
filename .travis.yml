@@ -16,7 +16,7 @@ before_deploy:
   # Ensure Docker is logged in
   - docker info  # Check if Docker is properly configured
   - docker login -u "$DOCKER_ID" --password-stdin <<< "$DOCKER_PASSWORD"  # Explicitly login if needed
-  - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client  # Build Docker image
+  # - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client  # Build Docker image
 
 script:
   # Run tests or any other commands
