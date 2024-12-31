@@ -11,6 +11,7 @@ before_install:
   - echo "Setting up Docker credentials"
   - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json  # Decode Docker credentials
   - echo "Docker config created"
+  - cat ~/.docker/config.jso
 
 before_deploy:
   # Ensure Docker is logged in
