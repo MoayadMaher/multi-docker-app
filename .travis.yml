@@ -4,9 +4,16 @@ language: generic
 services:
   - docker
 
-before_install:
-  # - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+before_deploy:
+  - mkdir -p ~/.docker
+  - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json
+
+  # Optionally check if Docker login was successful
+  - docker info
+
+# before_install:
+#   # - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
+#   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
 script:
   # - docker run -e CI=true complex/react-test npm test
