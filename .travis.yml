@@ -5,23 +5,28 @@ services:
   - docker
 
 before_deploy:
+  # Set up Docker authentication
   - mkdir -p ~/.docker
   - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json
+
+  # Verify the Docker configuration
   - docker info
-  - docker login
+  
+  # Build your Docker image(s)
   - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
 
 script:
+  # Run tests inside the container
   - docker run -e CI=true complex/react-test npm test
 
 after_success:
+  # Build your Docker images
   - docker build -t complex/multi-client ./client
   # - docker build -t complex/multi-nginx ./nginx
   # - docker build -t complex/multi-server ./server
   # - docker build -t complex/multi-worker ./worker
-  # # Log in to the docker CLI
-  # # - docker login -u $DOCKER_ID --password "$DOCKER_PASSWORD"
-  # # Take those images and push them to docker hub
+  
+  # Push the images to Docker Hub
   - docker push complex/multi-client
   # - docker push complex/multi-nginx
   # - docker push complex/multi-server
