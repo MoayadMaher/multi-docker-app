@@ -4,30 +4,26 @@ language: generic
 services:
   - docker
 
-before_deploy:
-  # Set up Docker authentication
-  - mkdir -p ~/.docker
-  - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json
-
-  # Verify the Docker configuration
-  - docker info
+before_install:
+  - echo "Before install step"
   
-  # Build your Docker image(s)
+before_deploy:
+  # Debugging output
+  - echo "Starting before_deploy..."
+  - mkdir -p ~/.docker
+  - echo "DOCKER_AUTH_CONFIG: $DOCKER_AUTH_CONFIG"
+  - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json
+  - echo "Docker config created."
+  - docker info  # This will display info about Docker
+  
+  # Docker build and deploy setup
   - docker build -t complex/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  # Run tests inside the container
-  # - docker run -e CI=true complex/react-test npm test
+  - echo "Running script..."
+  - docker run -e CI=true complex/react-test npm test
 
 after_success:
-  # Build your Docker images
+  # Docker build and push
   - docker build -t complex/multi-client ./client
-  # - docker build -t complex/multi-nginx ./nginx
-  # - docker build -t complex/multi-server ./server
-  # - docker build -t complex/multi-worker ./worker
-  
-  # Push the images to Docker Hub
   - docker push complex/multi-client
-  # - docker push complex/multi-nginx
-  # - docker push complex/multi-server
-  # - docker push complex/multi-worker
