@@ -9,9 +9,11 @@ before_install:
   - mkdir -p ~/.docker
   # Set up Docker credentials
   - echo "Setting up Docker credentials"
-  - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json  # Decode Docker credentials
+  - echo "$DOCKER_AUTH_CONFIG"
+  - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json || (echo "Base64 decode failed!" && exit 1)
+  - ls -l ~/.docker/config.json
   - echo "Docker config created"
-  - cat ~/.docker/config.json
+  - cat ~/.docker/config.json || echo "Failed to read Docker config"
 
 before_deploy:
   # Ensure Docker is logged in
