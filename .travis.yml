@@ -29,5 +29,5 @@ script:
 
 after_success:
   # Push the built Docker images to Docker Hub
-  - docker build -t complex/multi-client ./client
-  - docker push complex/multi-client
+  - docker build -t $DOCKER_ID/multi-client ./client
+  - docker push $DOCKER_ID/multi-client
