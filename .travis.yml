@@ -10,6 +10,8 @@ before_install:
   - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json || (echo "Base64 decode failed!" && exit 1)
   - cat ~/.docker/config.json || echo "Failed to read Docker config"
   - gem install nokogiri --platform=ruby
+  - bundle config set force_ruby_platform true
+  - bundle install
   - docker build -t $DOCKER_ID/react-test -f ./client/Dockerfile.dev ./client
 
 script:
