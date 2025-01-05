@@ -1,31 +1,37 @@
 sudo: required
+dist: focal  # Use Ubuntu 20.04 for a newer glibc version
 language: generic
 
 services:
   - docker
 
 before_install:
-  # Ensure the .docker directory exists
+  # Install required system dependencies
+  - sudo apt-get update
+  - sudo apt-get install -y libxml2-dev libxslt-dev zlib1g-dev build-essential patch ruby-dev
+
+  # Ensure Bundler is installed and up-to-date
+  - gem install bundler
+  - bundle config set force_ruby_platform true  # Force Ruby platform for Nokogiri
+  - gem install nokogiri --platform=ruby  # Ensure Nokogiri is compiled locally
+
+  # Set up Docker authentication
   - mkdir -p ~/.docker
   - echo "$DOCKER_AUTH_CONFIG" | base64 --decode > ~/.docker/config.json || (echo "Base64 decode failed!" && exit 1)
   - cat ~/.docker/config.json || echo "Failed to read Docker config"
-  - gem install nokogiri --platform=ruby
-  - bundle config set force_ruby_platform true
-  - bundle install
   - docker build -t $DOCKER_ID/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  # Run tests or any other commands
+  # Run tests
   - echo "Running tests"
   - docker run -e CI=true $DOCKER_ID/react-test npm test
 
 after_success:
-  # Push the built Docker images to Docker Hub
+  # Build and push Docker images
   - docker build -t $DOCKER_ID/multi-client ./client
   - docker build -t $DOCKER_ID/multi-nginx ./nginx
   - docker build -t $DOCKER_ID/multi-server ./server
   - docker build -t $DOCKER_ID/multi-worker ./worker
-  - docker info || echo "Docker not authenticated"
   - docker push $DOCKER_ID/multi-client
   - docker push $DOCKER_ID/multi-nginx
   - docker push $DOCKER_ID/multi-server
@@ -42,3 +48,9 @@ deploy:
     branch: master
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_SECRET_KEY
+
+# Debugging info
+before_script:
+  - ruby --version
+  - gem list nokogiri
+  - ldd --version
